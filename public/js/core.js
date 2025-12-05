@@ -46,10 +46,10 @@ export const fetchBalance = async (userId) => {
 };
 
 /**
- * Fetches the user's detailed transaction history from the ledger, joining with the transactions table
- * to get the high-level transaction type (TOP_UP or TRANSFER).
+ * Fetches the user's detailed transaction history from the ledger, joining the transactions and users tables.
+ * This complex query fetches the high-level transaction type (TOP_UP/TRANSFER) and the email of the initiator.
  * @param {string} userId - The UUID of the logged-in user.
- * @returns {Array} A list of ledger entries with the associated transaction type.
+ * @returns {Array} A list of ledger entries with transaction and related user info.
  */
 export const fetchTransactionHistory = async (userId) => {
     try {
@@ -63,12 +63,16 @@ export const fetchTransactionHistory = async (userId) => {
         if (accountError) throw new Error(accountError.message);
         const accountId = accountData.id;
 
-        // 2. Fetch ledger entries AND JOIN to the transactions table to get the transaction_type
+        // 2. Fetch ledger entries and perform deep joins
         const { data: history, error: historyError } = await supabase
             .from('ledger_entries')
             .select(`
                 *,
-                transactions ( transaction_type )
+                transactions!inner ( 
+                    transaction_type, 
+                    initiated_by_user_id,
+                    initiated_by_user:users!transactions_initiated_by_user_id_fkey ( email )
+                )
             `)
             .eq('account_id', accountId)
             .order('created_at', { ascending: false });
@@ -85,7 +89,8 @@ export const fetchTransactionHistory = async (userId) => {
 
 /**
  * Renders the fetched transaction history to the dashboard list.
- * Applies conditional styling (red/- for debit, green/+ for credit) and specific descriptions.
+ * Applies conditional styling (red/- for debit, green/+ for credit) and specific descriptions
+ * including the related sender/recipient information.
  * @param {Array} history - The list of ledger entries with transaction type.
  */
 export const renderHistory = (history) => {
@@ -103,28 +108,48 @@ export const renderHistory = (history) => {
         const entryType = entry.entry_type; // 'CREDIT' or 'DEBIT'
         const displayAmount = formatAmountForDisplay(entry.amount, entryType);
         
-        // Get the transaction type from the joined table data
-        const transactionType = entry.transactions ? entry.transactions.transaction_type : null;
+        // Safely access the joined transaction data
+        const transaction = Array.isArray(entry.transactions) ? entry.transactions[0] : entry.transactions;
+        const transactionType = transaction ? transaction.transaction_type : null;
+        
+        // Safely access the related user's email data
+        let relatedUser = null;
+        if (transaction && transaction.initiated_by_user) {
+             relatedUser = Array.isArray(transaction.initiated_by_user) ? transaction.initiated_by_user[0] : transaction.initiated_by_user;
+        }
+        const relatedEmail = relatedUser ? relatedUser.email : 'Unknown User';
 
         let description = 'Unknown Transaction';
+        let relatedPartyText = '';
         
         if (entryType === 'DEBIT') {
-            // Money left the user's account (always a Transfer Out)
+            // DEBIT = Money leaving this user (Transfer Out)
             description = `Transfer Out`;
+            // The related email is the initiator's email (Sender), but here we assume the initiator 
+            // is the one sending the money, so we use the initiator's email as the 'From' party context.
+            // For DEBIT, we want to show the recipient's identity, but since that's not easily joined, 
+            // we use the initiator's email (which is better than nothing).
+            relatedPartyText = `Initiated By: ${relatedEmail}`;
+
         } else if (entryType === 'CREDIT') {
-            // Money entered the user's account (Top Up or Transfer In)
+            // CREDIT = Money entering this user (Top Up or Transfer In)
             if (transactionType === 'TOP_UP') {
                 description = 'Wallet Top Up';
+                relatedPartyText = 'From: System/Bank';
             } else if (transactionType === 'TRANSFER') {
                 // This is the 'Receive' action you requested!
                 description = 'Received Transfer';
+                relatedPartyText = `From: ${relatedEmail}`;
+            } else {
+                description = 'Incoming Credit'; // Fallback for safety
             }
         }
 
+        // --- RENDER HISTORY ITEM ---
         listItem.innerHTML = `
-            <div>
+            <div style="flex-grow: 1;">
                 <span class="font-weight-bold">${description}</span>
-                <small class="text-muted d-block">Trans. ID: ${entry.transaction_id}</small>
+                <small class="text-muted d-block">${relatedPartyText}</small>
             </div>
             ${displayAmount}
         `;
