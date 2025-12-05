@@ -7,25 +7,35 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div id="app-container">
-        <header>
-            <h1><span class="brand"><span class="brand-accent">Doz</span>&nbsp;Cash</span></h1>
-            <button id="logout-btn" style="display: none;">Logout</button>
-        </header>
+    <div id="app-container">
 
-        <section id="auth-view" class="view">
-            <h2>Welcome</h2>
-            <form id="auth-form">
-                <input type="email" id="auth-email" placeholder="Email" required>
-                <input type="password" id="auth-password" placeholder="Password" required>
-                <input type="text" id="auth-name" placeholder="Full Name (Sign Up only)" style="display:none;">
-                <button type="submit" id="auth-submit-btn">Login</button>
-                <p>
-                    <a href="#" id="toggle-auth">Need an account? Sign Up</a>
-                </p>
-            </form>
-            <p id="auth-message" class="message"></p>
-        </section>
+        <!-- HERO: left = big "Welcome Back" panel, right = sign-in card -->
+        <div class="hero">
+            <div class="hero-left" aria-hidden="true">
+                <div class="hero-left-inner">
+                    <h1 class="hero-title">FlowPay
+                    <p class="hero-sub">
+                    </p>
+                </div>
+            </div>
+
+            <div class="hero-right">
+                <!-- keep the existing auth-view and form so JS continues to work -->
+                <section id="auth-view" class="view">
+                    <h2 class="auth-heading">Sign in</h2>
+                    <form id="auth-form">
+                        <input type="email" id="auth-email" placeholder="Email" required>
+                        <input type="password" id="auth-password" placeholder="Password" required>
+                        <input type="text" id="auth-name" placeholder="Full Name (Sign Up only)" style="display:none;">
+                        <button type="submit" id="auth-submit-btn">Sign in now</button>
+                        <p>
+                            <a href="#" id="toggle-auth">Need an account? Sign Up</a>
+                        </p>
+                    </form>
+                    <p id="auth-message" class="message"></p>
+                </section>
+            </div>
+        </div>
 
         <section id="dashboard-view" class="view" style="display:none;">
             <h2>Dashboard</h2>

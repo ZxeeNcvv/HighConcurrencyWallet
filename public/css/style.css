@@ -25,46 +25,103 @@ body {
     line-height: 1.6;
 }
 
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* center the app vertically */
+    min-height: 100vh;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
 #app-container {
     background: var(--card-background);
-    padding: 20px; /* reduced padding so content fits better on narrower screens */
-    margin-top: 20px;
+    padding: 36px 24px;    /* narrower left/right padding */
+    margin-top: 0;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
     width: 100%;
-    max-width: 420px; /* slightly narrower to keep layout compact */
-}
-
-header {
+    max-width: 640px;      /* reduce overall card width so sides are tighter */
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     align-items: center;
-    margin-bottom: 20px; /* reduced spacing */
-    border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 12px;
 }
 
-/* ensure logo + title stay on one line and don't wrap */
+/* FlowPay title — larger and centered */
+.hero-title,
 header h1 {
-    display: flex;
-    align-items: center;
-    gap: 12px;
     margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 48px;       /* increase FlowPay size */
+    color: var(--primary-color);
+    font-weight: 800;
+    text-align: center;
+    line-height: 1;
 }
 
-.logo {
-    width: 40px; /* fixed box so title won't wrap under it */
-    height: 40px;
-    object-fit: contain;
-    margin-right: 8px;
-    vertical-align: middle;
-    flex-shrink: 0;
+/* Sign in / subtitle — larger and more prominent */
+.auth-heading,
+#auth-view h2 {
+    font-size: 28px;       /* increase Sign in size */
+    margin: 8px 0 22px 0;
+    font-weight: 700;
+    text-align: center;
 }
+
+/* Constrain the auth column to avoid large left/right gaps */
+#auth-view {
+    width: 100%;
+    max-width: 480px;      /* narrower form column */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* keep inputs sized to the constrained form */
+#auth-form {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+#auth-form button,
+#auth-submit-btn {
+    font-size: 16px;         /* Buttons: 16–18px (set to 16px) */
+    padding: 12px 18px;
+    border-radius: 8px;
+}
+
+/* Keep the auth card centered and constrained so it fits nicely */
+#auth-view {
+    width: 100%;
+    max-width: 680px;        /* keep form centered and prevent right-space */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* small visual tweak: ensure hero-right centers its card */
+.hero-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+    box-sizing: border-box;
+}
+
+/* ensure brand/header sizing adapts to the narrower container */
+header h1 {
+    font-size: 2.6rem;
+}
+
+/* ensure leftover logo hidden */
+.logo { display: none !important; }
 
 h1, h2, h3 {
     margin-top: 0;
