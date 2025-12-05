@@ -9,7 +9,7 @@ import {
     supabase 
 } from './auth.js'; 
 import { fetchBalance, fetchTransactionHistory, renderHistory } from './core.js';
-import { transferFunds, topUpWallet } from './api.js';
+import { transferFunds, topUpWallet, purchaseFromMerchant } from './api.js';
 
 // --- DOM ELEMENTS ---
 const authView = document.getElementById('auth-view');
@@ -44,7 +44,7 @@ let currentTransactionType = null;
 let currentUser = null;
 
 
-// --- VIEW HANDLERS ---
+// --- VIEW HANDLERS (UNCHANGED) ---
 
 const showView = (viewElement) => {
     // Hide all main views
@@ -69,10 +69,8 @@ const updateDashboard = async () => {
         const balance = await fetchBalance(user.id);
         balanceDisplay.textContent = `${balance} PHP`;
 
-        // Always fetch history, even if it's not currently displayed
         const history = await fetchTransactionHistory(user.id);
         renderHistory(history); 
-        // NOTE: renderHistory now just populates the hidden list, it doesn't display it.
 
     } else {
         showView(authView);
@@ -134,9 +132,7 @@ const openTransactionModal = (type) => {
     transactionMessage.textContent = '';
     transactionMessage.classList.remove('error', 'success');
     
-    // 1. Hide History content and show Transaction form
     if (transactionForm && modalContentBody) {
-        // Move the transaction form back to the modal body (if it was moved out)
         modalContentBody.innerHTML = '';
         modalContentBody.appendChild(transactionForm);
         modalContentBody.appendChild(transactionMessage);
@@ -147,18 +143,25 @@ const openTransactionModal = (type) => {
     if (type === 'TRANSFER') {
         transactionTitle.textContent = 'Transfer Funds';
         transRecipientInput.style.display = 'block';
+        transRecipientInput.setAttribute('placeholder', 'Recipient Email');
         transRecipientInput.setAttribute('required', 'required');
+
     } else if (type === 'TOP_UP') {
         transactionTitle.textContent = 'Top Up Wallet';
         transRecipientInput.style.display = 'none';
         transRecipientInput.removeAttribute('required');
+
+    } else if (type === 'PURCHASE') {
+        transactionTitle.textContent = 'Merchant Purchase';
+        transRecipientInput.style.display = 'block';
+        transRecipientInput.setAttribute('placeholder', 'Merchant Email');
+        transRecipientInput.setAttribute('required', 'required');
     }
 
     showView(transactionView);
 };
 
 
-// NEW FUNCTION: OPEN HISTORY MODAL
 const openHistoryModal = () => {
     transactionTitle.textContent = 'Transaction History';
     
@@ -180,8 +183,10 @@ const openHistoryModal = () => {
 // Event listeners
 document.getElementById('show-transfer-btn').addEventListener('click', () => openTransactionModal('TRANSFER'));
 document.getElementById('show-topup-btn').addEventListener('click', () => openTransactionModal('TOP_UP'));
-document.getElementById('show-history-btn').addEventListener('click', openHistoryModal); // New Handler
-modalCloseBtn.addEventListener('click', () => updateDashboard());
+document.getElementById('show-history-btn').addEventListener('click', openHistoryModal); 
+
+// <<< THE MISSING LINE: CONNECTING THE PURCHASE BUTTON >>>
+document.getElementById('show-purchase-btn').addEventListener('click', () => openTransactionModal('PURCHASE'));
 
 
 transactionForm.addEventListener('submit', async (e) => {
@@ -204,6 +209,12 @@ transactionForm.addEventListener('submit', async (e) => {
 
         } else if (currentTransactionType === 'TOP_UP') {
             result = await topUpWallet(currentUser.id, amount);
+
+        } else if (currentTransactionType === 'PURCHASE') {
+            const merchantEmail = transRecipientInput.value;
+            if (!merchantEmail) throw new Error("Merchant email is required.");
+
+            result = await purchaseFromMerchant(currentUser.id, merchantEmail, amount);
 
         } else {
             throw new Error("Invalid transaction type.");
