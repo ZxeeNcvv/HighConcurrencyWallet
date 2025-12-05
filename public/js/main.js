@@ -25,16 +25,18 @@ const authNameInput = document.getElementById('auth-name');
 
 const balanceDisplay = document.getElementById('current-balance');
 
-// NEW ELEMENT FOR HISTORY CONTAINER
-const historyContainer = document.getElementById('history-container');
+// HISTORY ELEMENTS
 const showHistoryBtn = document.getElementById('show-history-btn');
-
+const historyListContainer = document.getElementById('history-list-container');
+const modalContentBody = document.getElementById('modal-content-body');
 const transactionForm = document.getElementById('transaction-form');
+const transactionMessage = document.getElementById('transaction-message');
+
+// TRANSACTION ELEMENTS
 const transactionTitle = document.getElementById('transaction-title');
 const transRecipientInput = document.getElementById('trans-recipient');
 const transAmountInput = document.getElementById('trans-amount');
 const transSubmitBtn = document.getElementById('trans-submit-btn');
-const transactionMessage = document.getElementById('transaction-message');
 const modalCloseBtn = transactionView.querySelector('.close-btn');
 
 let isSignUp = false;
@@ -64,18 +66,13 @@ const updateDashboard = async () => {
         showView(dashboardView);
         logoutBtn.style.display = 'block';
         
-        // Fetch balance
         const balance = await fetchBalance(user.id);
         balanceDisplay.textContent = `${balance} PHP`;
 
-        // Always fetch history, but only render it if the container is visible
+        // Always fetch history, even if it's not currently displayed
         const history = await fetchTransactionHistory(user.id);
-        renderHistory(history);
-        
-        // Ensure history is hidden on initial load/update
-        if (historyContainer) {
-            historyContainer.style.display = 'none';
-        }
+        renderHistory(history); 
+        // NOTE: renderHistory now just populates the hidden list, it doesn't display it.
 
     } else {
         showView(authView);
@@ -83,7 +80,7 @@ const updateDashboard = async () => {
     }
 };
 
-// --- AUTH HANDLERS ---
+// --- AUTH HANDLERS (UNCHANGED) ---
 
 toggleAuthLink.addEventListener('click', (e) => {
     e.preventDefault();
@@ -136,6 +133,16 @@ const openTransactionModal = (type) => {
     transactionForm.reset();
     transactionMessage.textContent = '';
     transactionMessage.classList.remove('error', 'success');
+    
+    // 1. Hide History content and show Transaction form
+    if (transactionForm && modalContentBody) {
+        // Move the transaction form back to the modal body (if it was moved out)
+        modalContentBody.innerHTML = '';
+        modalContentBody.appendChild(transactionForm);
+        modalContentBody.appendChild(transactionMessage);
+        transactionForm.style.display = 'block';
+    }
+
 
     if (type === 'TRANSFER') {
         transactionTitle.textContent = 'Transfer Funds';
@@ -150,20 +157,30 @@ const openTransactionModal = (type) => {
     showView(transactionView);
 };
 
-// HANDLER TO TOGGLE HISTORY VISIBILITY
-if (showHistoryBtn) {
-    showHistoryBtn.addEventListener('click', () => {
-        if (historyContainer) {
-            const isHidden = historyContainer.style.display === 'none';
-            historyContainer.style.display = isHidden ? 'block' : 'none';
-            showHistoryBtn.textContent = isHidden ? 'Hide History' : 'View History';
+
+// NEW FUNCTION: OPEN HISTORY MODAL
+const openHistoryModal = () => {
+    transactionTitle.textContent = 'Transaction History';
+    
+    // 1. Clear modal body
+    if (modalContentBody) {
+        modalContentBody.innerHTML = '';
+        // 2. Move the pre-rendered history list from the dashboard into the modal body
+        if (historyListContainer) {
+            modalContentBody.appendChild(historyListContainer);
+            historyListContainer.style.display = 'block'; // Make history visible inside modal
         }
-    });
+    }
+    
+    // 3. Show the modal
+    showView(transactionView);
 }
 
 
+// Event listeners
 document.getElementById('show-transfer-btn').addEventListener('click', () => openTransactionModal('TRANSFER'));
 document.getElementById('show-topup-btn').addEventListener('click', () => openTransactionModal('TOP_UP'));
+document.getElementById('show-history-btn').addEventListener('click', openHistoryModal); // New Handler
 modalCloseBtn.addEventListener('click', () => updateDashboard());
 
 
@@ -196,7 +213,6 @@ transactionForm.addEventListener('submit', async (e) => {
         transactionMessage.classList.add('success');
         transactionForm.reset();
 
-        // Update dashboard after a short delay
         setTimeout(updateDashboard, 1500); 
 
     } catch (error) {
@@ -208,7 +224,7 @@ transactionForm.addEventListener('submit', async (e) => {
 });
 
 
-// --- FINAL INITIALIZATION BLOCK ---
+// --- FINAL INITIALIZATION BLOCK (UNCHANGED) ---
 document.addEventListener('DOMContentLoaded', () => {
     supabase.auth.onAuthStateChange((event, session) => { 
         if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
