@@ -11,24 +11,24 @@ export default async (req, res) => {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    const { userId, merchantId, amount } = req.body;
-    
-    if (!userId || !merchantId || !amount || parseFloat(amount) <= 0) {
-        return res.status(400).json({ error: 'Invalid user, merchant, or amount provided.' });
+    const { senderId, recipientEmail, amount } = req.body;
+
+    if (!senderId || !recipientEmail || !amount || amount <= 0) {
+        return res.status(400).json({ error: 'Invalid input parameters.' });
     }
 
     try {
-        const { data, error } = await supabase.rpc('merchant_purchase_atomic', {
-            user_id_input: userId,
-            merchant_acc_id: parseInt(merchantId),
-            purchase_amount: parseFloat(amount)
+        const { data, error } = await supabase.rpc('transfer_funds_atomic', {
+            sender_id: senderId,
+            recipient_email: recipientEmail,
+            transfer_amount: parseFloat(amount)
         });
 
         if (error) {
             console.error('Supabase RPC Error:', error);
-            return res.status(500).json({ 
-                status: 'error', 
-                message: error.message || 'Purchase failed due to a database error.'
+            return res.status(500).json({
+                status: 'error',
+                message: error.message || 'Transaction failed due to a database error.'
             });
         }
         
