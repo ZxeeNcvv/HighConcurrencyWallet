@@ -1,36 +1,21 @@
-/* Custom CSS Variables */
-:root {
-    --primary-color: #007bff; /* Blue */
-    --success-color: #28a745; /* Green */
-    --danger-color: #dc3545; /* Red */
-    --background-color: #f7f9fc; /* Very light gray */
-    --card-background: #ffffff;
-    --text-color: #333;
-    --light-text: #6c757d;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --border-radius: 8px;
-}
-
-/* Basic Reset and Typography */
+/* Basic Reset and Variables */
 body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--background-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Slightly modern font */
+    background-color: #f0f2f5; /* Lighter background */
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
-    color: var(--text-color);
-    line-height: 1.6;
 }
 
 #app-container {
-    background: var(--card-background);
+    background: #ffffff;
     padding: 30px;
     margin-top: 50px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
+    border-radius: 10px; /* Softer corners */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Deeper shadow */
     width: 100%;
     max-width: 500px;
 }
@@ -45,22 +30,16 @@ header {
 }
 
 .logo {
-    height: 28px;
+    height: 28px; /* Slightly larger logo */
     margin-right: 10px;
-    vertical-align: middle;
-}
-
-h1, h2, h3 {
-    margin-top: 0;
-    font-weight: 600;
 }
 
 /* Forms and Inputs */
 input, button {
     width: 100%;
-    padding: 12px;
+    padding: 12px; /* Increased padding */
     margin-bottom: 15px;
-    border-radius: var(--border-radius);
+    border-radius: 6px; /* Softer radius */
     box-sizing: border-box;
     font-size: 1em;
 }
@@ -70,7 +49,7 @@ input {
 }
 
 button {
-    background-color: var(--primary-color);
+    background-color: #1877f2; /* Facebook/Modern Blue */
     color: white;
     border: none;
     cursor: pointer;
@@ -79,25 +58,25 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #145db3;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Dashboard Elements */
 .balance-card {
-    background-color: #e6f7ff; /* Lighter shade of primary color */
+    background-color: #f0f8ff; /* Very light blue */
     padding: 25px;
-    border-radius: var(--border-radius);
+    border-radius: 8px;
     text-align: center;
     margin-bottom: 25px;
-    border: 1px solid #b3e0ff;
+    border: 1px solid #007bff;
 }
 
 #current-balance {
-    font-size: 2.5em;
+    font-size: 2.5em; /* Larger balance */
     font-weight: 700;
-    color: var(--primary-color);
-    margin: 10px 0 0;
+    color: #007bff;
+    margin: 0;
 }
 
 .action-buttons {
@@ -110,11 +89,10 @@ button:hover {
     width: 32%;
     padding: 10px 0;
     font-size: 0.9em;
-    margin: 0;
-    border-radius: 6px;
+    margin: 0; /* Remove individual margins */
 }
 
-/* Transaction History List - Styled as Cards */
+/* Transaction History List (Updated from #history-table) */
 #transaction-history-list {
     list-style: none;
     padding: 0;
@@ -122,16 +100,12 @@ button:hover {
 }
 
 .list-group-item {
-    background: #fdfdfd;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: box-shadow 0.2s;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
 }
 
-.list-group-item:hover {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.list-group-item:last-child {
+    border-bottom: none;
 }
 
 .d-flex {
@@ -150,20 +124,14 @@ button:hover {
 
 /* REQUIRED: Red text for Debits (Money leaving the account) */
 .text-danger {
-    color: var(--danger-color) !important; 
+    color: #dc3545 !important; /* Standard red */
     font-weight: 600;
 }
 
-/* Green text for Credits (Money entering the account) */
+/* Optional: Green text for Credits (Money entering the account) */
 .text-success {
-    color: var(--success-color) !important; 
+    color: #28a745 !important; /* Standard green */
     font-weight: 600;
-}
-
-/* Small text for details */
-.text-muted {
-    color: var(--light-text) !important;
-    font-size: 0.85em;
 }
 
 /* Messages */
@@ -190,25 +158,25 @@ button:hover {
 /* Modal Styling */
 .modal {
     position: fixed;
-    z-index: 1000;
+    z-index: 1000; /* High z-index */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.6); 
+    background-color: rgba(0,0,0,0.6); /* Darker overlay */
     padding-top: 60px;
 }
 
 .modal-content {
-    background-color: var(--card-background);
+    background-color: #fefefe;
     margin: 5% auto;
     padding: 25px;
     border: none;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     width: 80%;
     max-width: 400px;
-    border-radius: var(--border-radius);
+    border-radius: 10px;
 }
 
 .close-btn {
@@ -220,7 +188,7 @@ button:hover {
 
 .close-btn:hover,
 .close-btn:focus {
-    color: var(--text-color);
+    color: #333;
     text-decoration: none;
     cursor: pointer;
 }
