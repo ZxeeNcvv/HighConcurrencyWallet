@@ -11,52 +11,28 @@ import {
 import { fetchBalance, fetchTransactionHistory, renderHistory } from './core.js';
 import { transferFunds, topUpWallet, purchaseFromMerchant } from './api.js';
 
-// --- DOM ELEMENTS ---
-const authView = document.getElementById('auth-view');
-const dashboardView = document.getElementById('dashboard-view');
-const transactionView = document.getElementById('transaction-view');
-const logoutBtn = document.getElementById('logout-btn');
-
-const authForm = document.getElementById('auth-form');
-const authSubmitBtn = document.getElementById('auth-submit-btn');
-const authMessage = document.getElementById('auth-message');
-const toggleAuthLink = document.getElementById('toggle-auth');
-const authNameInput = document.getElementById('auth-name');
-
-const balanceDisplay = document.getElementById('current-balance');
-
-// HISTORY ELEMENTS
-const showHistoryBtn = document.getElementById('show-history-btn');
-const historyListContainer = document.getElementById('history-list-container');
-const modalContentBody = document.getElementById('modal-content-body');
-const transactionForm = document.getElementById('transaction-form');
-const transactionMessage = document.getElementById('transaction-message');
-
-// TRANSACTION ELEMENTS
-const transactionTitle = document.getElementById('transaction-title');
-const transRecipientInput = document.getElementById('trans-recipient');
-const transAmountInput = document.getElementById('trans-amount');
-const transSubmitBtn = document.getElementById('trans-submit-btn');
-const modalCloseBtn = transactionView.querySelector('.close-btn');
-
+// --- Global Variables (Only simple state) ---
 let isSignUp = false;
 let currentTransactionType = null;
 let currentUser = null;
 
+// --- DOM References (Initialized later in DOMContentLoaded) ---
+let authView, dashboardView, transactionView, logoutBtn;
+let authForm, authSubmitBtn, authMessage, toggleAuthLink, authNameInput;
+let balanceDisplay;
+let showHistoryBtn, historyListContainer, modalContentBody;
+let transactionForm, transactionTitle, transRecipientInput, transAmountInput, transSubmitBtn, transactionMessage, modalCloseBtn;
 
-// --- VIEW HANDLERS (UNCHANGED) ---
+
+// --- VIEW HANDLERS ---
 
 const showView = (viewElement) => {
     // Hide all main views
     [authView, dashboardView, transactionView].forEach(view => {
-        view.style.display = 'none';
+        if (view) view.style.display = 'none'; // Safe check
     });
 
-    if (viewElement === transactionView) {
-        viewElement.style.display = 'block';
-    } else {
-        viewElement.style.display = 'block';
-    }
+    if (viewElement) viewElement.style.display = 'block';
 };
 
 const updateDashboard = async () => {
@@ -64,32 +40,32 @@ const updateDashboard = async () => {
     if (user) {
         currentUser = user;
         showView(dashboardView);
-        logoutBtn.style.display = 'block';
+        if (logoutBtn) logoutBtn.style.display = 'block';
         
         const balance = await fetchBalance(user.id);
-        balanceDisplay.textContent = `${balance} PHP`;
+        if (balanceDisplay) balanceDisplay.textContent = `${balance} PHP`;
 
         const history = await fetchTransactionHistory(user.id);
         renderHistory(history); 
 
     } else {
         showView(authView);
-        logoutBtn.style.display = 'none';
+        if (logoutBtn) logoutBtn.style.display = 'none';
     }
 };
 
-// --- AUTH HANDLERS (UNCHANGED) ---
+// --- AUTH HANDLERS ---
 
-toggleAuthLink.addEventListener('click', (e) => {
+const handleAuthToggle = (e) => {
     e.preventDefault();
     isSignUp = !isSignUp;
     authNameInput.style.display = isSignUp ? 'block' : 'none';
     authSubmitBtn.textContent = isSignUp ? 'Sign Up' : 'Login';
     toggleAuthLink.textContent = isSignUp ? 'Already have an account? Login' : 'Need an account? Sign Up';
     authMessage.textContent = '';
-});
+};
 
-authForm.addEventListener('submit', async (e) => {
+const handleAuthSubmit = async (e) => {
     e.preventDefault();
     authMessage.textContent = '';
     authMessage.classList.remove('error', 'success');
@@ -116,12 +92,12 @@ authForm.addEventListener('submit', async (e) => {
         authMessage.textContent = error.message;
         authMessage.classList.add('error');
     }
-});
+};
 
-logoutBtn.addEventListener('click', async () => {
+const handleLogout = async () => {
     await signOutUser();
     updateDashboard();
-});
+};
 
 
 // --- TRANSACTION/HISTORY HANDLERS ---
@@ -132,7 +108,8 @@ const openTransactionModal = (type) => {
     transactionMessage.textContent = '';
     transactionMessage.classList.remove('error', 'success');
     
-    if (transactionForm && modalContentBody) {
+    // 1. Reset Modal Body (CRITICAL FOR MODAL REUSE)
+    if (modalContentBody) {
         modalContentBody.innerHTML = '';
         modalContentBody.appendChild(transactionForm);
         modalContentBody.appendChild(transactionMessage);
@@ -171,25 +148,14 @@ const openHistoryModal = () => {
         // 2. Move the pre-rendered history list from the dashboard into the modal body
         if (historyListContainer) {
             modalContentBody.appendChild(historyListContainer);
-            historyListContainer.style.display = 'block'; // Make history visible inside modal
+            historyListContainer.style.display = 'block';
         }
     }
     
-    // 3. Show the modal
     showView(transactionView);
 }
 
-
-// Event listeners
-document.getElementById('show-transfer-btn').addEventListener('click', () => openTransactionModal('TRANSFER'));
-document.getElementById('show-topup-btn').addEventListener('click', () => openTransactionModal('TOP_UP'));
-document.getElementById('show-history-btn').addEventListener('click', openHistoryModal); 
-
-// <<< THE MISSING LINE: CONNECTING THE PURCHASE BUTTON >>>
-document.getElementById('show-purchase-btn').addEventListener('click', () => openTransactionModal('PURCHASE'));
-
-
-transactionForm.addEventListener('submit', async (e) => {
+const handleTransactionSubmit = async (e) => {
     e.preventDefault();
     transactionMessage.textContent = 'Processing...';
     transactionMessage.classList.remove('error', 'success');
@@ -232,10 +198,56 @@ transactionForm.addEventListener('submit', async (e) => {
     } finally {
         transSubmitBtn.disabled = false;
     }
-});
+};
 
-// --- FINAL INITIALIZATION BLOCK (UNCHANGED) ---
+
+// --- FINAL INITIALIZATION BLOCK (CRITICAL: All listeners and references set here) ---
 document.addEventListener('DOMContentLoaded', () => {
+    // 1. Assign all DOM elements now that the document is ready
+    authView = document.getElementById('auth-view');
+    dashboardView = document.getElementById('dashboard-view');
+    transactionView = document.getElementById('transaction-view');
+    logoutBtn = document.getElementById('logout-btn');
+
+    authForm = document.getElementById('auth-form');
+    authSubmitBtn = document.getElementById('auth-submit-btn');
+    authMessage = document.getElementById('auth-message');
+    toggleAuthLink = document.getElementById('toggle-auth');
+    authNameInput = document.getElementById('auth-name');
+
+    balanceDisplay = document.getElementById('current-balance');
+
+    showHistoryBtn = document.getElementById('show-history-btn');
+    historyListContainer = document.getElementById('history-list-container');
+    modalContentBody = document.getElementById('modal-content-body');
+    
+    transactionForm = document.getElementById('transaction-form');
+    transactionTitle = document.getElementById('transaction-title');
+    transRecipientInput = document.getElementById('trans-recipient');
+    transAmountInput = document.getElementById('trans-amount');
+    transSubmitBtn = document.getElementById('trans-submit-btn');
+    const showTransferBtn = document.getElementById('show-transfer-btn');
+    const showTopupBtn = document.getElementById('show-topup-btn');
+    const showPurchaseBtn = document.getElementById('show-purchase-btn'); // New
+    transactionMessage = document.getElementById('transaction-message');
+    modalCloseBtn = transactionView ? transactionView.querySelector('.close-btn') : null;
+
+
+    // 2. Attach all event listeners
+    if (authForm) authForm.addEventListener('submit', handleAuthSubmit);
+    if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+    if (toggleAuthLink) toggleAuthLink.addEventListener('click', handleAuthToggle);
+    if (transactionForm) transactionForm.addEventListener('submit', handleTransactionSubmit);
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', () => updateDashboard());
+
+    // Transaction Buttons
+    if (showTransferBtn) showTransferBtn.addEventListener('click', () => openTransactionModal('TRANSFER'));
+    if (showTopupBtn) showTopupBtn.addEventListener('click', () => openTransactionModal('TOP_UP'));
+    if (showPurchaseBtn) showPurchaseBtn.addEventListener('click', () => openTransactionModal('PURCHASE')); // Merchant
+    if (showHistoryBtn) showHistoryBtn.addEventListener('click', openHistoryModal); 
+
+
+    // 3. Start state tracking
     supabase.auth.onAuthStateChange((event, session) => { 
         if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
             updateDashboard();
