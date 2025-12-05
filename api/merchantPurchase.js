@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 // IMPORTANT: Credentials are retrieved from the environment variables set in .env.local/Vercel settings
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://liwjgydaiyzvqfxcjlsp.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY; // The private service key
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY; 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxpd2pneWRhaXl6dnFmeGNqbHNwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDkzOTY3NiwiZXhwIjoyMDgwNTE1Njc2fQ.YxaE88jptcEiRa2y2EWSN9areeO5YL3DDKrMa-6KFuM'
 
 if (!supabaseUrl || !supabaseServiceKey) {
     throw new Error('Supabase environment variables not securely set on Vercel.');
