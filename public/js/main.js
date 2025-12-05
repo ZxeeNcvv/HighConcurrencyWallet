@@ -234,7 +234,6 @@ transactionForm.addEventListener('submit', async (e) => {
     }
 });
 
-
 // --- FINAL INITIALIZATION BLOCK (UNCHANGED) ---
 document.addEventListener('DOMContentLoaded', () => {
     supabase.auth.onAuthStateChange((event, session) => { 
