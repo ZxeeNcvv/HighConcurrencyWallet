@@ -1,4 +1,4 @@
-import { signInUser, signUpUser, signOutUser, getActiveSession, getCurrentUser } from './auth.js';
+import { signInUser, signUpUser, signOutUser, getActiveSession, getCurrentUser, supabase } from './auth.js';
 import { fetchBalance, fetchTransactionHistory, renderHistory } from './core.js';
 import { transferFunds, topUpWallet } from './api.js';
 
