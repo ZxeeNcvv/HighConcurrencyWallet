@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High-Concurrency Wallet</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app-container">
+        <header>
+            <h1><img src="assets/logo.png" alt="Wallet Logo" class="logo"> Digital Ledger</h1>
+            <button id="logout-btn" style="display: none;">Logout</button>
+        </header>
+
+        <section id="auth-view" class="view">
+            <h2>Welcome</h2>
+            <form id="auth-form">
+                <input type="email" id="auth-email" placeholder="Email" required>
+                <input type="password" id="auth-password" placeholder="Password" required>
+                <input type="text" id="auth-name" placeholder="Full Name (Sign Up only)" style="display:none;">
+                <button type="submit" id="auth-submit-btn">Login</button>
+                <p>
+                    <a href="#" id="toggle-auth">Need an account? Sign Up</a>
+                </p>
+            </form>
+            <p id="auth-message" class="message"></p>
+        </section>
+
+        <section id="dashboard-view" class="view" style="display:none;">
+            <h2>Dashboard</h2>
+            <div class="balance-card">
+                <h3>Current Balance</h3>
+                <p id="current-balance">--</p>
+            </div>
+
+            <div class="action-buttons">
+                <button id="show-transfer-btn">Transfer Funds</button>
+                <button id="show-topup-btn">Top Up</button>
+                <button id="show-history-btn">View History</button>
+            </div>
+
+            <h3>Transaction History (Last 10)</h3>
+            <table id="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    <tr><td colspan="4">Loading history...</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="transaction-view" class="view modal" style="display:none;">
+            <div class="modal-content">
+                <span class="close-btn">&times;</span>
+                <h2 id="transaction-title"></h2>
+                <form id="transaction-form">
+                    <input type="number" id="trans-amount" placeholder="Amount (e.g., 100.00)" step="0.01" required>
+                    
+                    <input type="email" id="trans-recipient" placeholder="Recipient Email" style="display:none;">
+                    
+                    <button type="submit" id="trans-submit-btn">Process Transaction</button>
+                </form>
+                <p id="transaction-message" class="message"></p>
+            </div>
+        </section>
+
+    </div> <script type="module" src="js/main.js"></script>
+</body>
+</html>

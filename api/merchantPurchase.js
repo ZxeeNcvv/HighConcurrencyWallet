@@ -1,0 +1,47 @@
+import { createClient } from '@supabase/supabase-js';
+
+// IMPORTANT: Credentials are retrieved from the environment variables set in .env.local/Vercel settings
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://liwjgydaiyzvqfxcjlsp.supabase.co';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY; // The private service key
+
+if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error('Supabase environment variables not securely set on Vercel.');
+}
+
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+export default async (req, res) => {
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method Not Allowed' });
+    }
+
+    // Note: merchantId here should correspond to an existing account.id in the 'accounts' table
+    const { userId, merchantId, amount } = req.body;
+    
+    if (!userId || !merchantId || !amount || parseFloat(amount) <= 0) {
+        return res.status(400).json({ error: 'Invalid user, merchant, or amount provided.' });
+    }
+
+    try {
+        const { data, error } = await supabase.rpc('merchant_purchase_atomic', {
+            user_id_input: userId,
+            merchant_acc_id: parseInt(merchantId),
+            purchase_amount: parseFloat(amount)
+        });
+
+        if (error) {
+            console.error('Supabase RPC Error:', error);
+            return res.status(500).json({ 
+                status: 'error', 
+                message: error.message || 'Purchase failed due to a database error.'
+            });
+        }
+        
+        const result = data;
+        return res.status(200).json(result);
+
+    } catch (error) {
+        console.error('Serverless Function Catch Error:', error);
+        return res.status(500).json({ error: 'An unexpected server error occurred.' });
+    }
+};
