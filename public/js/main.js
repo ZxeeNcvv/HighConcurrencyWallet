@@ -1,4 +1,13 @@
-import { signInUser, signUpUser, signOutUser, getActiveSession, getCurrentUser, supabase } from './auth.js';
+// File: public/js/main.js
+
+import { 
+    signInUser, 
+    signUpUser, 
+    signOutUser, 
+    getActiveSession, 
+    getCurrentUser, 
+    supabase // <-- FIX: Explicitly import the supabase object for use in the listener
+} from './auth.js'; 
 import { fetchBalance, fetchTransactionHistory, renderHistory } from './core.js';
 import { transferFunds, topUpWallet } from './api.js';
 
@@ -38,7 +47,6 @@ const showView = (viewElement) => {
     });
 
     if (viewElement === transactionView) {
-        // Handle modal display
         viewElement.style.display = 'block';
     } else {
         viewElement.style.display = 'block';
@@ -52,7 +60,6 @@ const updateDashboard = async () => {
         showView(dashboardView);
         logoutBtn.style.display = 'block';
         
-        // Load and display core data
         const balance = await fetchBalance(user.id);
         balanceDisplay.textContent = `${balance} PHP`;
 
@@ -89,7 +96,7 @@ authForm.addEventListener('submit', async (e) => {
             await signUpUser(email, password, fullName);
             authMessage.textContent = 'Sign up successful! You can now log in.';
             authMessage.classList.add('success');
-            isSignUp = false; // Switch back to login after successful sign up
+            isSignUp = false; 
             authNameInput.style.display = 'none';
             authSubmitBtn.textContent = 'Login';
             toggleAuthLink.textContent = 'Need an account? Sign Up';
@@ -127,14 +134,13 @@ const openTransactionModal = (type) => {
         transRecipientInput.style.display = 'none';
         transRecipientInput.removeAttribute('required');
     }
-    // Note: Merchant Purchase logic would be similar, perhaps requiring a merchant ID
 
     showView(transactionView);
 };
 
 document.getElementById('show-transfer-btn').addEventListener('click', () => openTransactionModal('TRANSFER'));
 document.getElementById('show-topup-btn').addEventListener('click', () => openTransactionModal('TOP_UP'));
-modalCloseBtn.addEventListener('click', () => updateDashboard()); // Close and refresh dashboard
+modalCloseBtn.addEventListener('click', () => updateDashboard());
 
 
 transactionForm.addEventListener('submit', async (e) => {
@@ -153,11 +159,9 @@ transactionForm.addEventListener('submit', async (e) => {
             const recipientEmail = transRecipientInput.value;
             if (!recipientEmail) throw new Error("Recipient email is required.");
             
-            // Calls the Vercel Serverless Function (api/transfer.js)
             result = await transferFunds(currentUser.id, recipientEmail, amount);
 
         } else if (currentTransactionType === 'TOP_UP') {
-            // Calls the Vercel Serverless Function (api/topUp.js)
             result = await topUpWallet(currentUser.id, amount);
 
         } else {
@@ -168,11 +172,9 @@ transactionForm.addEventListener('submit', async (e) => {
         transactionMessage.classList.add('success');
         transactionForm.reset();
 
-        // Refresh dashboard after a short delay to allow database triggers to complete
         setTimeout(updateDashboard, 1500); 
 
     } catch (error) {
-        // Display the specific error message from the server/database
         transactionMessage.textContent = `Error: ${error.message}`;
         transactionMessage.classList.add('error');
     } finally {
@@ -181,16 +183,16 @@ transactionForm.addEventListener('submit', async (e) => {
 });
 
 
-// --- INITIALIZATION ---
+// --- FINAL INITIALIZATION BLOCK (Wrapped for robustness) ---
+document.addEventListener('DOMContentLoaded', () => {
+    // This is line 187 (or near it). It now correctly references the imported 'supabase' object.
+    supabase.auth.onAuthStateChange((event, session) => { 
+        if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+            updateDashboard();
+        } else if (event === 'SIGNED_OUT') {
+            updateDashboard();
+        }
+    });
 
-// Use Supabase's built-in listener to handle session changes (e.g., refreshing the page)
-supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-        updateDashboard();
-    } else if (event === 'SIGNED_OUT') {
-        updateDashboard();
-    }
+    updateDashboard(); // Initial check
 });
-
-// Initial check on load
-updateDashboard();
