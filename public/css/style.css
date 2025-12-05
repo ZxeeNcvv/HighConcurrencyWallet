@@ -1,7 +1,7 @@
 /* Basic Reset and Variables */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f7f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Slightly modern font */
+    background-color: #f0f2f5; /* Lighter background */
     margin: 0;
     padding: 0;
     display: flex;
@@ -14,8 +14,8 @@ body {
     background: #ffffff;
     padding: 30px;
     margin-top: 50px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px; /* Softer corners */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); /* Deeper shadow */
     width: 100%;
     max-width: 500px;
 }
@@ -25,88 +25,122 @@ header {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30px;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 15px;
 }
 
 .logo {
-    height: 24px;
+    height: 28px; /* Slightly larger logo */
     margin-right: 10px;
 }
 
 /* Forms and Inputs */
 input, button {
     width: 100%;
-    padding: 10px;
+    padding: 12px; /* Increased padding */
     margin-bottom: 15px;
-    border-radius: 4px;
+    border-radius: 6px; /* Softer radius */
     box-sizing: border-box;
+    font-size: 1em;
 }
 
 input {
-    border: 1px solid #ccc;
+    border: 1px solid #c9d2da;
 }
 
 button {
-    background-color: #007bff;
+    background-color: #1877f2; /* Facebook/Modern Blue */
     color: white;
     border: none;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    font-weight: 600;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #145db3;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Dashboard Elements */
 .balance-card {
-    background-color: #e9f5ff;
-    padding: 20px;
-    border-radius: 6px;
+    background-color: #f0f8ff; /* Very light blue */
+    padding: 25px;
+    border-radius: 8px;
     text-align: center;
-    margin-bottom: 20px;
-    border-left: 5px solid #007bff;
+    margin-bottom: 25px;
+    border: 1px solid #007bff;
 }
 
 #current-balance {
-    font-size: 2em;
-    font-weight: bold;
+    font-size: 2.5em; /* Larger balance */
+    font-weight: 700;
     color: #007bff;
     margin: 0;
 }
 
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
 .action-buttons button {
     width: 32%;
+    padding: 10px 0;
+    font-size: 0.9em;
+    margin: 0; /* Remove individual margins */
+}
+
+/* Transaction History List (Updated from #history-table) */
+#transaction-history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list-group-item {
     padding: 12px 0;
-    font-size: 0.9em;
-    margin: 0 1% 20px 0;
+    border-bottom: 1px solid #eee;
 }
 
-/* History Table */
-#history-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
+.list-group-item:last-child {
+    border-bottom: none;
 }
 
-#history-table th, #history-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    font-size: 0.9em;
+.d-flex {
+    display: flex;
 }
 
-#history-table th {
-    background-color: #f2f2f2;
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+/* --- CORE FUNCTIONAL STYLING (RED/GREEN) --- */
+
+/* REQUIRED: Red text for Debits (Money leaving the account) */
+.text-danger {
+    color: #dc3545 !important; /* Standard red */
+    font-weight: 600;
+}
+
+/* Optional: Green text for Credits (Money entering the account) */
+.text-success {
+    color: #28a745 !important; /* Standard green */
+    font-weight: 600;
 }
 
 /* Messages */
 .message {
-    padding: 10px;
-    border-radius: 4px;
+    padding: 12px;
+    border-radius: 6px;
     text-align: center;
-    margin-top: 10px;
+    margin-top: 15px;
+    font-weight: 500;
 }
 
 .message.error {
@@ -124,36 +158,37 @@ button:hover {
 /* Modal Styling */
 .modal {
     position: fixed;
-    z-index: 1;
+    z-index: 1000; /* High z-index */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    background-color: rgba(0,0,0,0.6); /* Darker overlay */
     padding-top: 60px;
 }
 
 .modal-content {
     background-color: #fefefe;
-    margin: 5% auto; /* 5% from the top and centered */
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
+    margin: 5% auto;
+    padding: 25px;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    width: 80%;
     max-width: 400px;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 .close-btn {
-    color: #aaa;
+    color: #999;
     float: right;
-    font-size: 28px;
+    font-size: 30px;
     font-weight: bold;
 }
 
 .close-btn:hover,
 .close-btn:focus {
-    color: black;
+    color: #333;
     text-decoration: none;
     cursor: pointer;
 }
