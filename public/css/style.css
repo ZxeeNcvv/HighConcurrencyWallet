@@ -27,27 +27,43 @@ body {
 
 #app-container {
     background: var(--card-background);
-    padding: 30px;
-    margin-top: 50px;
+    padding: 20px; /* reduced padding so content fits better on narrower screens */
+    margin-top: 20px;
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
     width: 100%;
-    max-width: 500px;
+    max-width: 420px; /* slightly narrower to keep layout compact */
 }
 
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px; /* reduced spacing */
     border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 15px;
+    padding-bottom: 12px;
+}
+
+/* ensure logo + title stay on one line and don't wrap */
+header h1 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .logo {
-    height: 28px;
-    margin-right: 10px;
+    width: 40px; /* fixed box so title won't wrap under it */
+    height: 40px;
+    object-fit: contain;
+    margin-right: 8px;
     vertical-align: middle;
+    flex-shrink: 0;
 }
 
 h1, h2, h3 {
