@@ -2,7 +2,7 @@
 
 import { supabase } from './auth.js'; 
 
-const historyList = document.getElementById('transaction-history-list');
+// REMOVED GLOBAL LINE: const historyList = document.getElementById('transaction-history-list');
 
 /**
  * Helper function to format the amount with color and sign based on entry type.
@@ -59,6 +59,7 @@ export const fetchTransactionHistory = async (userId) => {
         if (accountError) throw new Error(accountError.message);
         const accountId = accountData.id;
 
+        // Fetch ledger entries and perform deep joins
         const { data: history, error: historyError } = await supabase
             .from('ledger_entries')
             .select(`
@@ -88,9 +89,13 @@ export const fetchTransactionHistory = async (userId) => {
  * @param {Array} history - The list of ledger entries with transaction type.
  */
 export const renderHistory = (history) => {
-    // CRITICAL FIX: Ensure historyList is not null before proceeding
+    // CRITICAL FIX: Get the element HERE, when the function is called, 
+    // ensuring the DOM is loaded.
+    const historyList = document.getElementById('transaction-history-list');
+
     if (!historyList) {
-        console.error("Critical Error: HTML element with ID 'transaction-history-list' was not found.");
+        // This should not happen if called correctly, but we keep the error handler.
+        console.error("Critical Error: HTML element with ID 'transaction-history-list' was not found during render.");
         return; 
     }
     
@@ -139,7 +144,7 @@ export const renderHistory = (history) => {
                 }
             }
 
-            // --- RENDER HISTORY ITEM (Enhanced Structure for better CSS) ---
+            // --- RENDER HISTORY ITEM ---
             listItem.innerHTML = `
                 <div style="flex-grow: 1;">
                     <span class="font-weight-bold">${description}</span>
