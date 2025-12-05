@@ -1,14 +1,14 @@
 /* Custom CSS Variables */
 :root {
-    --primary-color: #007bff; /* Blue */
-    --success-color: #28a745; /* Green */
-    --danger-color: #dc3545; /* Red */
-    --background-color: #f7f9fc; /* Very light gray */
+    --primary-color: #0066FF; /* unified FlowPay blue */
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --background-color: #f7f9fc;
     --card-background: #ffffff;
     --text-color: #333;
     --light-text: #6c757d;
-    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    --border-radius: 8px;
+    --shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+    --border-radius: 12px;
 }
 
 /* Basic Reset and Typography */
@@ -38,48 +38,96 @@ body {
     line-height: 1.6;
 }
 
+:root {
+    --border-radius: 20px; /* larger, more spacious corners */
+    /* ...other vars... */
+}
+
+/* enlarge the main card and give more padding so it doesn't feel tight */
 #app-container {
-    background: var(--card-background);
-    padding: 36px 24px;    /* narrower left/right padding */
-    margin-top: 0;
+    padding: 52px 64px;     /* bigger top/bottom and L/R padding */
+    max-width: 1000px;      /* increase overall card width */
     border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    width: 100%;
-    max-width: 640px;      /* reduce overall card width so sides are tighter */
+    box-shadow: 0 12px 40px rgba(0,0,0,0.06);
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
-/* FlowPay title — larger and centered */
+/* more vertical space between brand and content */
+header {
+    margin-bottom: 36px;    /* reduce or increase as needed */
+    padding: 8px 0;
+}
+
 .hero-title,
 header h1 {
-    margin: 0;
-    font-size: 48px;       /* increase FlowPay size */
-    color: var(--primary-color);
+    color: var(--primary-color); /* uses your defined blue (#0066FF) */
+    /* keep existing sizing */
     font-weight: 800;
     text-align: center;
-    line-height: 1;
 }
 
-/* Sign in / subtitle — larger and more prominent */
+/* dashboard column wider so content uses the extra space */
+#dashboard-view {
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto 18px;
+    padding: 0 20px;
+}
+
+/* balance card: larger, more prominent */
+.balance-card {
+    padding: 40px 36px;
+    border-radius: 20px;
+    max-width: 820px;
+    margin: 14px auto 22px;
+    box-shadow: 0 10px 30px rgba(3,64,255,0.04);
+}
+
+/* balance label smaller, amount larger */
+.balance-card h3 {
+    font-size: 16px;
+    color: #666666;
+    margin-bottom: 10px;
+}
+
+#current-balance {
+    font-size: 48px;       /* bigger numeric display */
+    font-weight: 800;
+    color: var(--primary-color);
+    margin: 6px 0 0 0;
+}
+
+/* action buttons larger and evenly spaced */
+.action-buttons {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 22px;
+    width: 100%;
+    justify-content: flex-start; /* align as desired; center if you prefer */
+}
+
+.action-buttons button {
+    flex: 1;
+    height: 56px;
+    padding: 0 20px;
+    border-radius: 14px;
+    font-size: 15px;
+}
+
+/* slightly increase form/heading spacing so it matches new scale */
 .auth-heading,
 #auth-view h2 {
-    font-size: 28px;       /* increase Sign in size */
-    margin: 8px 0 22px 0;
-    font-weight: 700;
-    text-align: center;
+    font-size: 28px;
+    margin: 6px 0 18px 0;
 }
 
-/* Constrain the auth column to avoid large left/right gaps */
+/* ensure form column uses the larger card width */
 #auth-view {
     width: 100%;
-    max-width: 480px;      /* narrower form column */
+    max-width: 720px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
 }
 
 /* keep inputs sized to the constrained form */
